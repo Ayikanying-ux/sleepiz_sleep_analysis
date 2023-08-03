@@ -32,6 +32,8 @@ class Visualization:
             mfcc_features = self.feature_extractor.extract_mfcc_features(audio_data, sample_rate)
             features_snoring.append(mfcc_features)
 
+
+
         df_snoring['Audio_Data'] = audio_data_snoring
         df_snoring['Sample_Rate'] = sample_rate_snoring
         df_snoring['Features'] = features_snoring
@@ -81,7 +83,7 @@ class Visualization:
         plt.ylabel('MFCC Coefficients')
         plt.show()
 
-        #df_snoring.to_csv('../dataset/csv/snoring_data.csv', index=False)
+        df_snoring.to_csv('dataset/csv/snoring_data.csv', index=False)
 
         return df_snoring
     
@@ -149,7 +151,7 @@ class Visualization:
         plt.ylabel('MFCC Coefficients')
         plt.show()
 
-        #df_non_snoring.to_csv('../dataset/csv/non_snoring_data.csv', index=False)
+        df_non_snoring.to_csv('dataset/csv/non_snoring_data.csv', index=False)
 
         return df_non_snoring
         
