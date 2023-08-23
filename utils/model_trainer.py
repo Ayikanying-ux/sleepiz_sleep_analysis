@@ -9,13 +9,15 @@ from sklearn.svm import SVC
 from sklearn.metrics import classification_report, confusion_matrix
 
 class ModelTrainer:
-    def __init__(self, data_loader, feature_extractor):
-        self.data_loader = data_loader
-        self.feature_extractor = feature_extractor
+    def __init__(self, snoring_csv_filepath, non_snoring_csv_filepath, model_filepath):
+        self.snoring_csv_filepath = snoring_csv_filepath
+        self.non_snoring_csv_filepath = non_snoring_csv_filepath
+        self.model_filepath = model_filepath
+        self.classifier = None
 
     def merge_dataframe(self):
-        df_snoring = pd.read_csv("dataset/csv/snoring_data.csv")
-        df_non_snoring = pd.read_csv("dataset/csv/non_snoring_data.csv")
+        df_snoring = pd.read_csv(self.snoring_csv_filepath)
+        df_non_snoring = pd.read_csv(self.non_snoring_csv_filepath)
         df = pd.concat([df_snoring, df_non_snoring])
 
         df['Features'] = df['Features'].apply(lambda x: np.array(x.strip('[]').split()).astype(float))
@@ -63,4 +65,14 @@ class ModelTrainer:
 
         print("Classification Report:")
         print(report)
+
+        self.classifier = classifier
+
+    def save_model(self):
+        if self.classifier is not None:
+            with open(self.model_filepath, 'wb') as model_file:
+                pickle.dump(self.classifier, model_file)
+            print("Model saved successfully.")
+        else:
+            print("No trained model available to save.")
         

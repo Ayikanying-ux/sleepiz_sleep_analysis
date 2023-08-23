@@ -1,30 +1,56 @@
 from utils.data_loader import DataLoader
 from utils.feature_extraction import FeatureExtractor
 from utils.model_trainer import ModelTrainer
-from utils.visualization import Visualization
+from utils.visualization import VisualizeSnoring, VisualizeNonSnoring
 
 if __name__ == "__main__":
-    # Provide the file paths for snoring and non-snoring audio data
-    audio_filepath_snoring = "data/1"
-    audio_filepath_non_snoring = 'data/0'
+    # File path for audio data
+    snoring_audio_filepath = "data/1"
+    non_snoring_audio_filepath = 'data/0'
 
-    # Create instances of modules
-    data_loader = DataLoader(audio_filepath_snoring, audio_filepath_non_snoring)
-    df_snoring = data_loader.load_audio_data(audio_filepath_snoring, 1, "snoring")
-    df_non_snoring = data_loader.load_audio_data(audio_filepath_non_snoring, 0, "non-snoring")
+    # Path to created csv files for both snoring and non snoring
+    non_snoring_csv_filepath = "dataset/csv/non_snoring_data.csv"
+    snoring_csv_filepath = "dataset/csv/snoring_data.csv"
 
-    df_snoring.to_csv('dataset/csv/snoring_data.csv', index=False)
-    df_non_snoring.to_csv('dataset/csv/non_snoring_data.csv', index=False)
+    # Model filepath
+    model_filepath = "model/classifier.pkl"
+    '''
+        data_loader - Create an instance of DataLoader
+        df_snoring - Load snoring audio file to a pandas dataframe
+        df_non_snoring - Load Non snoring audio file to pandas dataframe
+        Then save them in csv format
+    '''
+    data_loader = DataLoader(snoring_audio_filepath, non_snoring_audio_filepath)
+    df_snoring = data_loader.load_audio_data(snoring_audio_filepath, 1, "snoring")
+    df_non_snoring = data_loader.load_audio_data(non_snoring_audio_filepath, 0, "non-snoring")
+    df_snoring.to_csv(snoring_csv_filepath, index=False)
+    df_non_snoring.to_csv(non_snoring_csv_filepath, index=False)
 
     feature_extractor = FeatureExtractor()
-    visualization = Visualization(feature_extractor)
-    model_trainer = ModelTrainer(data_loader, feature_extractor)
+    # Perform visualizations (Snoring)
+    snoring = VisualizeSnoring(feature_extractor, snoring_csv_filepath, snoring_audio_filepath="data/1")
 
-    # Perform snoring visualization and save the dataframe
-    df_snoring = visualization.snoring_visualization()
+    wave = snoring.waveplot() # Plot the wave form
+    spectrum = snoring.plotPowerSpectrum() # Power Spectrum Plot
+    spectogram = snoring.plotSpectogram() # Spectogrum Plot
+    features = snoring.plotMFCC() # MFCC Plot
 
-    # Perform non-snoring visualization and save the dataframe
-    df_non_snoring = visualization.non_snoring_visualization()
+
+    # Perform visualizations (Non-snoring)
+    non_snoring = VisualizeNonSnoring(feature_extractor, non_snoring_csv_filepath, non_snoring_audio_filepath="data/0")
+    wave = non_snoring.waveplot()# Plot the wave form
+    spectrum = non_snoring.plotPowerSpectrum()# Power Spectrum Plot
+    spectogram = non_snoring.plotSpectogram()# Spectogrum Plot
+    features = non_snoring.plotMFCC()# MFCC Plot
+
+    # Model Building
+    model = ModelTrainer(snoring_csv_filepath, non_snoring_csv_filepath, model_filepath)
 
     # Merge dataframes and train the model
-    model_trainer.train_model()
+    model.merge_dataframe()
+
+    # Train model
+    model.train_model()
+
+    # Save model
+    model.save_model()
