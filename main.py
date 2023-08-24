@@ -1,7 +1,7 @@
-from utils.data_loader import DataLoader
-from utils.feature_extraction import FeatureExtractor
+from src.IO.DataLoader import DataLoader
+from src.FeatureExtraction.MFCC import MFCCFeatureExtractor
 from utils.model_trainer import ModelTrainer
-from utils.visualization import VisualizeSnoring, VisualizeNonSnoring
+from src.Visualization.visualization import VisualizeSnoring, VisualizeNonSnoring
 
 if __name__ == "__main__":
     # File path for audio data
@@ -26,7 +26,7 @@ if __name__ == "__main__":
     df_snoring.to_csv(snoring_csv_filepath, index=False)
     df_non_snoring.to_csv(non_snoring_csv_filepath, index=False)
 
-    feature_extractor = FeatureExtractor()
+    feature_extractor = MFCCFeatureExtractor()
     # Perform visualizations (Snoring)
     snoring = VisualizeSnoring(feature_extractor, snoring_csv_filepath, snoring_audio_filepath="data/1")
 

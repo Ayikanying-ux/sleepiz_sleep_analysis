@@ -1,7 +1,7 @@
 import numpy as np
 import librosa
 
-class FeatureExtractor:
+class MFCCFeatureExtractor:
     def __init__(self, num_mfcc=20, num_filter_banks=26):
         self.num_mfcc = num_mfcc
         self.num_filter_banks = num_filter_banks

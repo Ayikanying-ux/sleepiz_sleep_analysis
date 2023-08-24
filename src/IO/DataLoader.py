@@ -8,7 +8,7 @@ class DataLoader:
         self.audio_filepath_snoring = audio_filepath_snoring
         self.audio_filepath_non_snoring = audio_filepath_non_snoring
 
-    def load_audio_data(self, audio_filepath, class_id, label):
+    def load_audio_data(self, audio_filepath, label, class_id):
         file_pattern = '*.wav'
         file_names = []
         labels = []
