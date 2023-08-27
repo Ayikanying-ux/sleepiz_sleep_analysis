@@ -1,6 +1,7 @@
 import librosa
 import numpy as np
 import matplotlib.pyplot as plt
+from ..FeatureExtraction.extract_features import ExtractMFCCFeatures
 
 
 class AudioVisualization:
@@ -34,8 +35,22 @@ class AudioVisualization:
             plt.title(title)
         return fig
 
-    def MFCCplot(self):
-        pass
+    def MFCCplot(self, width: int = 10, height: int = 4, title: str = None):
+        MFFCfeatures = []
+        for audio_file in self.audio:
+            audio, sample_rate = librosa.load(audio_file)
+            feature_extract = ExtractMFCCFeatures()
+            MFFCfeatures.append(feature_extract.extract_mfcc_features(audio, sample_rate))
+        features = np.array(MFFCfeatures)
+        print(features.shape)
+        fig = plt.figure(figsize=(width, height))
+        librosa.display.specshow(features.T, x_axis='time')
+        plt.colorbar(format='%+2.0f dB')
+        if title:
+            plt.title(title)
+        plt.xlabel('Time')
+        plt.ylabel('MFCC Coefficients')
+        return fig
 
     def spectogram(self, data_nbr: int = 0, width: int = 10, height: int = 4, title=None):
         audio, sample_rate = librosa.load(self.audio[data_nbr])
