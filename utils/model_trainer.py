@@ -61,7 +61,6 @@ class ModelTrainer:
         plt.ylabel("True Labels")
         plt.title("Confusion Matrix")
         plt.show()
-        #print(y_pred)
 
         print("Classification Report:")
         print(report)
