@@ -1,35 +1,32 @@
-import librosa
 import numpy as np
 import pandas as pd
 import librosa
-from src.FeatureExtraction.extract_features import extract_mfcc_features
+# from src.FeatureExtraction.extract_features import extrac/t_mfcc_features
 
 
-class AudioPreprocessor:
-    def __init__(self, dataframe, target_sample_rate=22050, noise_factor=0.005):
-        self.target_sample_rate = target_sample_rate
-        self.noise_factor = noise_factor
-        self.dataframe = dataframe
-        self._feature_extractor = extract_mfcc_features
+class AudioDFPreprocessor:
+    def __init__(self,  audio_column_name:str = "Audio",sample_rate_column_name= "sample_rate"):
+        self.__audio_column_name = audio_column_name
+        self.__sample_rate_column_name = sample_rate_column_name
 
-    def resample_audio_and_sample_rate(self, audio_column_name:str, sample_rate_column_name):
-        for index, row in self.dataframe.iterrows():
-            sample_rate = row[sample_rate_column_name]
-            resampled_audio = librosa.resample(row[audio_column_name], orig_sr=sample_rate, target_sr=self.target_sample_rate)
-            self.dataframe.at[index, audio_column_name] = resampled_audio
-        return self.dataframe
+    def resample_audio(self, data: pd.DataFrame, target_sample_rate: int =22050 ):
+        def resample_audio(row):
+            return librosa.resample(row[self.__audio_column_name], orig_sr=row[self.__sample_rate_column_name], target_sr=target_sample_rate)
+        data[self.__audio_column_name] = data.apply(resample_audio, axis=1)
+        data[self.__sample_rate_column_name] = target_sample_rate
+
     
 
-    def extract_mffc_features(self, audio_column: np.array):
-        self.dataframe['features'] = None
-        for index, row in self.dataframe.iterrows():
-            audio = row[audio_column]
-            sample_rate = self.target_sample_rate
-            features = self._feature_extractor(audio_data=audio, sample_rate=sample_rate)
-            self.dataframe.at[index, "features"] = features
-        return self.dataframe
-    
-    def preprocess(self, audio_column_name: np.ndarray, sample_rate_column_name: int):
-        self.resample_audio_and_sample_rate(audio_column_name, sample_rate_column_name)
-        extracted_features = self.extract_mffc_features(audio_column_name)
-        return extracted_features
+    def add_mffc_features(self, data: pd.DataFrame, num_mfcc: int = 20, num_filter_banks: int = 26):
+        def extract_mfcc(row):
+            audio_data = row[self.__audio_column_name]
+            sample_rate = row[self.__sample_rate_column_name]
+            filter_banks = librosa.filters.mel(sr=sample_rate, n_fft=2048, n_mels=num_filter_banks)
+            filter_banks_features = np.dot(filter_banks, np.abs(librosa.stft(audio_data)) ** 2.0)
+            mfcc = librosa.feature.mfcc(S=librosa.power_to_db(filter_banks_features), n_mfcc=num_mfcc)
+            mfcc_mean = np.mean(mfcc, axis=1)
+            mfcc_std = np.std(mfcc, axis=1)
+            mfcc_features = np.concatenate((mfcc_mean, mfcc_std))
+            return mfcc_features
+
+        data['mfccs'] = data.apply(extract_mfcc, axis=1)
