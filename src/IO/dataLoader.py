@@ -29,9 +29,10 @@ class AudioLoader:
         data_file1 = pd.read_csv(data_filepath1)
         data_file2 = pd.read_csv(data_filepath2)
         dataframe = pd.concat([data_file1, data_file2])
-        
+        dataframe['features'] = dataframe['features'].apply(lambda x: np.array(x.strip('[]').split()).astype(float))
         output_filepath = self._csv_path / "data.csv"
         dataframe.to_csv(output_filepath, index=False)
+
         
         return dataframe
 

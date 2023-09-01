@@ -26,7 +26,7 @@ class AudioPreprocessor:
             audio = row[audio_column]
             sample_rate = self.target_sample_rate
             features = self._feature_extractor(audio_data=audio, sample_rate=sample_rate)
-            self.dataframe.at[index, "features"] = features.tolist()
+            self.dataframe.at[index, "features"] = features
         return self.dataframe
     
     def preprocess(self, audio_column_name: np.ndarray, sample_rate_column_name: int):
