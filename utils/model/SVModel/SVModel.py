@@ -43,3 +43,6 @@ class SVModel(Classifier):
         plt.ylabel("True Labels")
         plt.title("Confusion Matrix")
         plt.show()
+
+    def save_model(self, classifier, model_filepath):
+        return super().save_model(classifier, model_filepath)

@@ -28,10 +28,10 @@ class Classifier(ABC):
     def evaluate_model(self):
         pass
 
-    def save_model(self):
-        if self.classifier is not None:
-            with open(self.model_filepath, 'wb') as model:
-                pickle.dump(self.classifier, model)
+    def save_model(self, classifier, model_filepath):
+        if classifier is not None:
+            with open(model_filepath, 'wb') as model:
+                pickle.dump(classifier, model)
             print("Model saved successfully.")
         else:
             print("No trained model available to save.")
