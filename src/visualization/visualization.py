@@ -31,22 +31,21 @@ class AudioVisualizer:
         audio_signal = self.__audio_signals[audio_signal_index]
         sample_rate = self.__sample_rates[audio_signal_index]
 
-        fft_output = np.fft.fft(audio_signal)
-        magnitude = np.abs(fft_output)[:len(audio_signal) // 2]
-        frequency = np.fft.fftfreq(len(audio_signal), 1 / sample_rate)[:len(audio_signal) // 2]
+        n = len(audio_signal)
+        k = np.arange(n)
+        T = n / sample_rate # time of audio in seconds
+        frq = k / T  # Two sides frequency range
+        frq = frq[range(n // 2)]  # One side frequency range (due to symmetry)
 
-        # Logarithmically spaced frequency bins
-        num_bins = 50  # You can adjust this as needed
-        log_freq = np.logspace(np.log2(frequency[1]), np.log2(frequency[-1]), num_bins)
-        log_magnitude = np.histogram(frequency, bins=log_freq, weights=magnitude)[0]
+        fft_audio = np.fft.fft(audio_signal) / n  # FFT and normalization
+        fft_audio = fft_audio[range(n // 2)]
 
-        # Create bar plot
         fig = plt.figure(figsize=(self.__width, self.__height))
-        plt.bar(log_freq[:-1], log_magnitude, width=np.diff(log_freq))
-        plt.xscale('log')
+        plt.plot(frq, abs(fft_audio))
+        plt.xlabel('Freq (Hz)')
+        plt.ylabel('Amplitude')
 
-        plt.xlabel("Frequency (Hz)")
-        plt.ylabel("Magnitude")
+        plt.tight_layout()
         if title:
             plt.title(title)
         else:
