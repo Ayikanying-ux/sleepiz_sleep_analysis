@@ -6,7 +6,7 @@ class AudioPreprocessor:
         self.__audio_signals = audio_signals
         self.__sample_rates = sample_rates
 
-    def resample_audio(self, target_sample_rate):
+    def resample_audio(self, target_sample_rate = 22050):
         resampled_audio_signals = []
         new_sample_rates = []
         for signal_nbr, audio_signal in enumerate(self.__audio_signals):

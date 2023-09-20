@@ -19,20 +19,7 @@ class PSGLoader(AudioLoader):
         data, sample_rate = self.__read_audio_file(edf_file_name)
         split_labels = self.__split_snoring_labels(snoring_label_df, rml_file_nbr=rml_file_nbr)
 
-        frame_length = sample_rate
-        hop_length = frame_length
-
-        for audio_idx in range(0, len(split_labels)):
-            start_idx = int(audio_idx * hop_length)
-            end_idx = int(min(start_idx + frame_length, len(data)))
-            frame = data[start_idx:end_idx]
-            label = split_labels[audio_idx]
-
-            self._data.loc[len(self._data)] = {
-                self.AUDIO_COL_NAME: frame,
-                self.LABEL_COL_NAME: label,
-                self.SAMPLE_RATE_COL_NAME: sample_rate
-            }
+        self._add_audio_signal(data, sample_rate, split_labels)
 
     def __read_snoring_labels(self, rml_file_name: str):
         tree = ET.parse(rml_file_name)

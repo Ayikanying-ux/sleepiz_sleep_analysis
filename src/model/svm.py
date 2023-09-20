@@ -3,7 +3,6 @@ from matplotlib import pyplot as plt
 from sklearn.metrics import confusion_matrix
 from sklearn.pipeline import make_pipeline
 from sklearn.svm import SVC
-import seaborn as sns
 import pickle
 from sklearn.preprocessing import StandardScaler, LabelEncoder
 
@@ -34,6 +33,10 @@ class SVModel(Classifier):
         plt.title("Confusion Matrix")
         plt.close(fig)
         return fig
+
+    def classify(self, X):
+        y_pred = self.__model.predict(X)
+        return y_pred
 
     def save_model(self, model_filepath):
         if self.__model is not None:
